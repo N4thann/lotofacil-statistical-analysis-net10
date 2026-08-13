@@ -62,6 +62,7 @@ namespace Lotofacil.Tests.BackgroundJobs
             await _logEntityRepoMock.Received(1).AddRangeAsync(Arg.Is<IEnumerable<ContestActivityLog>>(logs => logs.Count() == 1 && logs.First().CountHits == 11));
             _baseContestEntityRepoMock.Received(1).Update(baseContest);
             _contestEntityRepoMock.Received(1).Update(contest);
+            contest.LastProcessedMainJob.ShouldNotBeNull();
             await _unitOfWorkMock.Received(1).CompleteAsync();
         }
 
