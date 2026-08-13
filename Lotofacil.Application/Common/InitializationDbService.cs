@@ -1,7 +1,6 @@
-﻿using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Domain.Interfaces;
+﻿using Lotofacil.Domain.Interfaces;
 
-namespace Lotofacil.Application.Services
+namespace Lotofacil.Application.Common
 {
     public class InitializationDbService : IInitializationDbService
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Application.DTO.Request
+namespace Lotofacil.Application.Features.Contests.DTO
 {
     /// <summary>
     /// DTO de request utilizada na tela List de Concursos.

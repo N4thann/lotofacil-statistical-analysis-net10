@@ -1,6 +1,6 @@
-﻿using Lotofacil.Domain.Models;
+﻿using Lotofacil.Domain.Common;
 
-namespace Lotofacil.Application.ViewsModel
+namespace Lotofacil.Application.Features.Statistics
 {
     /// <summary>
     /// Representa os dois concursos base mais eficientes com base em um cálculo ponderado de acertos acima de 11 pontos.

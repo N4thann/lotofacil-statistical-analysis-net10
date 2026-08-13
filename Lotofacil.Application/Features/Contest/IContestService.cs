@@ -1,6 +1,5 @@
-﻿using Lotofacil.Application.DTO.Request;
-using Lotofacil.Application.DTO.Response;
-using Lotofacil.Application.ViewsModel;
+﻿using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Application.Services.Interfaces
+namespace Lotofacil.Application.Features.Contests
 {
     public interface IContestService
     {

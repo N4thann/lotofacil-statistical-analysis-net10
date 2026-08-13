@@ -1,8 +1,9 @@
-﻿using Lotofacil.Application.ViewsModel;
+﻿using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.Statistics;
 using Lotofacil.Domain.Entities;
 using System.Text;
 
-namespace Lotofacil.Application.Services.Interfaces
+namespace Lotofacil.Application.Common
 {
     /// <summary>
     /// Service responsible for contest management operations.

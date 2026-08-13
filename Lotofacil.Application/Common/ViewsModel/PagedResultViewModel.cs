@@ -1,4 +1,4 @@
-﻿namespace Lotofacil.Application.ViewsModel
+﻿namespace Lotofacil.Application.Common.ViewsModel
 {
     /// <summary>
     /// Representa um resultado paginado de uma entidade genérica.

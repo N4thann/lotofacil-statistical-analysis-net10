@@ -1,6 +1,6 @@
 ﻿using Lotofacil.Domain.Enums;
 
-namespace Lotofacil.Application.ViewsModel
+namespace Lotofacil.Application.Common.ViewsModel
 {
     /// <summary>
     /// ViewModel responsável por classificar e exibir informações sobre erros na aplicação.

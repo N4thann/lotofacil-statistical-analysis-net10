@@ -1,4 +1,4 @@
-﻿namespace Lotofacil.Application.Services.Interfaces
+﻿namespace Lotofacil.Application.Common
 {
     public interface IInitializationDbService
     {

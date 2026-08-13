@@ -1,4 +1,4 @@
-﻿namespace Lotofacil.Application.ViewsModel
+﻿namespace Lotofacil.Application.Features.Statistics
 {
     /// <summary>
     /// ViewModel utilizada para exibir análises na tela do Dash3.

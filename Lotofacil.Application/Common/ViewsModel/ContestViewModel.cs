@@ -1,4 +1,4 @@
-﻿namespace Lotofacil.Application.ViewsModel
+﻿namespace Lotofacil.Application.Common.ViewsModel
 {
     /// <summary>
     /// ViewModel utilizada para representar um concurso (Contest ou BaseContest).

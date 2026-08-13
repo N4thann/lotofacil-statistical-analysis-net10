@@ -1,13 +1,13 @@
 ﻿using ClosedXML.Excel;
-using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.Statistics;
+using Lotofacil.Domain.Common;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
-using Lotofacil.Domain.Models;
 using Serilog;
 using System.Text;
 
-namespace Lotofacil.Application.Services
+namespace Lotofacil.Application.Common
 {
     /// <summary>
     /// Service for managing contests and providing common utility methods for contest-related entities.

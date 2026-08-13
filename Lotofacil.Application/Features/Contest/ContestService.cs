@@ -1,15 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Office.CustomUI;
-using Lotofacil.Application.DTO.Request;
-using Lotofacil.Application.DTO.Response;
-using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
-namespace Lotofacil.Application.Services
+namespace Lotofacil.Application.Features.Contests
 {
     public class ContestService : IContestService
     {

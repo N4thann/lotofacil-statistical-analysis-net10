@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Application.DTO.Response
+namespace Lotofacil.Application.Features.Contests.DTO
 {
     /// <summary>
     /// DTO de response para a tela List de Concursos.

@@ -1,5 +1,4 @@
-﻿using Lotofacil.Application.Services;
-using Lotofacil.Application.Services.Interfaces;
+﻿using Lotofacil.Application.Common;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;

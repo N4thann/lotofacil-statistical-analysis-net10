@@ -1,7 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.ContestActivityLogs;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
-namespace Lotofacil.Application.Services
+namespace Lotofacil.Application.Features.BaseContests
 {
     public class BaseContestService : IBaseContestService
     {

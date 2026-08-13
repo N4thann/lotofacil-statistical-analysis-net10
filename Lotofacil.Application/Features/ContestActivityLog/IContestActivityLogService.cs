@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Application.Services.Interfaces
+namespace Lotofacil.Application.Features.ContestActivityLogs
 {
     public interface IContestActivityLogService
     {

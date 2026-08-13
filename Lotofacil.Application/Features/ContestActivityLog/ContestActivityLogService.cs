@@ -1,12 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Lotofacil.Application.Services.Interfaces;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Linq;
 
-namespace Lotofacil.Application.Services
+namespace Lotofacil.Application.Features.ContestActivityLogs
 {
     public class ContestActivityLogService : IContestActivityLogService
     {

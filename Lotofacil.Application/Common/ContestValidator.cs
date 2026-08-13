@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common.ViewsModel;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using System;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Application.Validators
+namespace Lotofacil.Application.Common
 {
     /// <summary>
     /// Validador para a entidade ContestViewModel utilizando FluentValidation.

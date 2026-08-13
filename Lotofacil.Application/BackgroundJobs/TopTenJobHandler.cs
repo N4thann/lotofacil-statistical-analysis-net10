@@ -1,4 +1,5 @@
-﻿using Lotofacil.Application.Services.Interfaces;
+﻿using Lotofacil.Application.Common;
+using Lotofacil.Application.Features.BaseContests;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Serilog;
