@@ -1,6 +1,8 @@
+using ClosedXML.Excel;
 using Lotofacil.Application.Common;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
+using Lotofacil.Tests.DataBuilder;
 using NSubstitute;
 using Shouldly;
 
@@ -123,6 +125,116 @@ namespace Lotofacil.Tests.Common
 
             // Assert
             result.ShouldBe(0);
+        }
+
+        [Fact(DisplayName = "SUCESSO - Deve gerar planilha Excel com cabeçalhos e valores corretos para logs de atividade")]
+        public void GenerateExcelForContestActivityLog_WhenDataIsProvided_ShouldProduceCorrectHeadersAndValues()
+        {
+            // Arrange
+            var log = ContestActivityLogDataBuilder.Create()
+                .WithName("Concurso 100")
+                .WithNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15")
+                .WithData(new DateTime(2026, 1, 10))
+                .WithBaseContestName("Concurso Base 1")
+                .WithBaseContestNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-16")
+                .Build();
+            var data = new List<ContestActivityLog> { log };
+
+            // Act
+            using var stream = _sut.GenerateExcelForContestActivityLog(data);
+
+            // Assert
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheet(1);
+
+            worksheet.Cell(1, 1).GetString().ShouldBe("Concurso");
+            worksheet.Cell(1, 2).GetString().ShouldBe("Números");
+            worksheet.Cell(1, 3).GetString().ShouldBe("Data de Realização");
+            worksheet.Cell(1, 4).GetString().ShouldBe("Concurso Base");
+            worksheet.Cell(1, 5).GetString().ShouldBe("Números do Concurso Base");
+
+            worksheet.Cell(2, 1).GetString().ShouldBe(log.Name);
+            worksheet.Cell(2, 2).GetString().ShouldBe(log.Numbers);
+            worksheet.Cell(2, 3).GetString().ShouldBe(log.Data.ToString());
+            worksheet.Cell(2, 4).GetString().ShouldBe(log.BaseContestName);
+            worksheet.Cell(2, 5).GetString().ShouldBe(log.BaseContestNumbers);
+        }
+
+        [Fact(DisplayName = "SUCESSO - Deve gerar planilha Excel somente com cabeçalhos quando não há logs de atividade")]
+        public void GenerateExcelForContestActivityLog_WhenDataIsEmpty_ShouldProduceOnlyHeaders()
+        {
+            // Arrange
+            var data = new List<ContestActivityLog>();
+
+            // Act
+            using var stream = _sut.GenerateExcelForContestActivityLog(data);
+
+            // Assert
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheet(1);
+
+            worksheet.Cell(1, 1).GetString().ShouldBe("Concurso");
+            worksheet.Cell(2, 1).GetString().ShouldBeEmpty();
+        }
+
+        [Fact(DisplayName = "SUCESSO - Deve gerar planilha Excel com cabeçalhos e valores corretos para concursos base, incluindo o cálculo de eficiência corrigido")]
+        public void GenerateExcelForBaseContest_WhenDataIsProvided_ShouldProduceCorrectHeadersAndValues()
+        {
+            // Arrange
+            var baseContest = BaseContestDataBuilder.Create()
+                .WithName("Concurso Base 1")
+                .WithNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15")
+                .WithData(new DateTime(2026, 1, 10))
+                .WithHits(hit11: 1, hit12: 1, hit13: 1, hit14: 1, hit15: 1)
+                .WithTopTenNumbers("01-02-03-04-05-06-07-08-09-10")
+                .Build();
+            var data = new List<BaseContest> { baseContest };
+
+            // Act
+            using var stream = _sut.GenerateExcelForBaseContest(data);
+
+            // Assert
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheet(1);
+
+            worksheet.Cell(1, 1).GetString().ShouldBe("Concurso Base");
+            worksheet.Cell(1, 2).GetString().ShouldBe("Números");
+            worksheet.Cell(1, 3).GetString().ShouldBe("Data de Realização");
+            worksheet.Cell(1, 4).GetString().ShouldBe("Acertou 11");
+            worksheet.Cell(1, 5).GetString().ShouldBe("Acertou 12");
+            worksheet.Cell(1, 6).GetString().ShouldBe("Acertou 13");
+            worksheet.Cell(1, 7).GetString().ShouldBe("Acertou 14");
+            worksheet.Cell(1, 8).GetString().ShouldBe("Acertou 15");
+            worksheet.Cell(1, 9).GetString().ShouldBe("Valor do Cálculo de eficiência");
+            worksheet.Cell(1, 10).GetString().ShouldBe("Top 10 números mais frequentes");
+
+            worksheet.Cell(2, 1).GetString().ShouldBe(baseContest.Name);
+            worksheet.Cell(2, 4).GetString().ShouldBe("1");
+            worksheet.Cell(2, 5).GetString().ShouldBe("1");
+            worksheet.Cell(2, 6).GetString().ShouldBe("1");
+            worksheet.Cell(2, 7).GetString().ShouldBe("1");
+            worksheet.Cell(2, 8).GetString().ShouldBe("1");
+            // 1 + (1*2) + (1*3) + (1*4) + (1*5) = 15 — prova a correção da fórmula (Task 1);
+            // a fórmula antiga (bug) daria 1 + 2 + 3 + (4*5) = 26.
+            worksheet.Cell(2, 9).GetString().ShouldBe("15");
+            worksheet.Cell(2, 10).GetString().ShouldBe(baseContest.TopTenNumbers);
+        }
+
+        [Fact(DisplayName = "SUCESSO - Deve gerar planilha Excel somente com cabeçalhos quando não há concursos base")]
+        public void GenerateExcelForBaseContest_WhenDataIsEmpty_ShouldProduceOnlyHeaders()
+        {
+            // Arrange
+            var data = new List<BaseContest>();
+
+            // Act
+            using var stream = _sut.GenerateExcelForBaseContest(data);
+
+            // Assert
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheet(1);
+
+            worksheet.Cell(1, 1).GetString().ShouldBe("Concurso Base");
+            worksheet.Cell(2, 1).GetString().ShouldBeEmpty();
         }
     }
 }
