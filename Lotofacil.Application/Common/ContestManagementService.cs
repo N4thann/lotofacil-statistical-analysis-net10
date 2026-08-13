@@ -137,8 +137,8 @@ namespace Lotofacil.Application.Common
                     ("Acertou 13", log => log.Hit13),
                     ("Acertou 14", log => log.Hit14),
                     ("Acertou 15", log => log.Hit15),
-                    ("Valor do Cálculo de eficiência", log => 
-                    (log.Hit11) + (log.Hit12 * 2) + (log.Hit13 * 3) + (log.Hit14 * 4) * (log.Hit15 * 5)),
+                    ("Valor do Cálculo de eficiência", log =>
+                    (log.Hit11) + (log.Hit12 * 2) + (log.Hit13 * 3) + (log.Hit14 * 4) + (log.Hit15 * 5)),
                     ("Top 10 números mais frequentes", log => log.TopTenNumbers),
                 };
 
