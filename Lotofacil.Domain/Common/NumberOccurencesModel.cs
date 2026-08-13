@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lotofacil.Domain.Models
+namespace Lotofacil.Domain.Common
 {
     /// <summary>
     /// Representa a contagem de ocorrências de um número específico dentro do intervalo de 1 a 25.
