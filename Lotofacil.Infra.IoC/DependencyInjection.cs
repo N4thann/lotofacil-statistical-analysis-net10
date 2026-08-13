@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
-using Lotofacil.Application.Services;
-using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.Validators;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.BaseContests;
+using Lotofacil.Application.Features.Contests;
+using Lotofacil.Application.Features.ContestActivityLogs;
 using Lotofacil.Domain.Interfaces;
 using Lotofacil.Infra.Data.Context;
 using Lotofacil.Infra.Data.Initialization;
