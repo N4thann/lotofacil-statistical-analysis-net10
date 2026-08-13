@@ -1,6 +1,6 @@
 using Hangfire;
 using Lotofacil.Application.BackgroundJobs;
-using Lotofacil.Application.Services.Interfaces;
+using Lotofacil.Application.Common;
 using Lotofacil.Infra.IoC;
 using Serilog;
 

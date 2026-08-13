@@ -1,7 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Lotofacil.Presentation.Extensions
+namespace Lotofacil.Web.Extensions
 {
     public static class ValidationExtensions
     {

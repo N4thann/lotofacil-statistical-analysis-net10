@@ -1,9 +1,10 @@
-﻿using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.ViewsModel;
+﻿using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.ContestActivityLogs;
 using Lotofacil.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Lotofacil.Web.Controllers
+namespace Lotofacil.Web.Features.ContestActivityLogs
 {
     public class ContestActivityLogController : Controller
     {

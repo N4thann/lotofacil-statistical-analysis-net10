@@ -1,11 +1,11 @@
-﻿using Lotofacil.Application.ViewsModel;
+﻿using Lotofacil.Application.Common.ViewsModel;
 using Microsoft.AspNetCore.Mvc;
-using Lotofacil.Application.Services.Interfaces;
+using Lotofacil.Application.Features.BaseContests;
 using FluentValidation;
 using FluentValidation.Results;
-using Lotofacil.Presentation.Extensions;
+using Lotofacil.Web.Extensions;
 
-namespace Lotofacil.Presentation.Controllers
+namespace Lotofacil.Web.Features.BaseContests
 {
     public class BaseContestController : Controller
     {

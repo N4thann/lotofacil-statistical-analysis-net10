@@ -1,18 +1,19 @@
 ﻿using ClosedXML.Excel;
 using FluentValidation;
 using FluentValidation.Results;
-using Lotofacil.Application.DTO.Request;
-using Lotofacil.Application.Services.Interfaces;
-using Lotofacil.Application.ViewsModel;
+using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
+using Lotofacil.Application.Features.Contests;
+using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Infra.Data.Context;
-using Lotofacil.Presentation.Extensions;
+using Lotofacil.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
-namespace Lotofacil.Presentation.Controllers
+namespace Lotofacil.Web.Features.Contests
 {
     public class ContestController : Controller
     {

@@ -1,8 +1,9 @@
-﻿using Lotofacil.Application.ViewsModel;
+﻿using Lotofacil.Application.Common;
+using Lotofacil.Application.Common.ViewsModel;
 using Microsoft.AspNetCore.Mvc;
-using Lotofacil.Application.Services.Interfaces;
+using Lotofacil.Application.Features.BaseContests;
 
-namespace Lotofacil.Presentation.Controllers
+namespace Lotofacil.Web.Features.Home
 {
     public class HomeController : Controller
     {
