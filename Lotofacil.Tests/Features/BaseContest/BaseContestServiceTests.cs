@@ -190,12 +190,17 @@ namespace Lotofacil.Tests.Features.BaseContests
             await _repositoryMock.DidNotReceiveWithAnyArgs().SaveDeleteAsync(default);
         }
 
-        [Fact(DisplayName = "SUCESSO - Deve filtrar por nome e data e paginar os resultados ordenados por data")]
+        [Fact(DisplayName = "SUCESSO - Deve filtrar por nome e data, paginar e projetar os campos resumidos incluindo a contagem de concursos relacionados")]
         public async Task GetFilteredBaseContestsAsync_WhenFiltersAndPaginationAreApplied_ShouldReturnMatchingPage()
         {
             // Arrange
             using var context = InMemoryDbContextFactory.Create();
-            var alpha1 = BaseContestDataBuilder.Create().WithName("Concurso Alpha1").WithData(new DateTime(2026, 1, 10)).Build();
+            var relatedContest = ContestDataBuilder.Create().Build();
+            var alpha1 = BaseContestDataBuilder.Create()
+                .WithName("Concurso Alpha1")
+                .WithData(new DateTime(2026, 1, 10))
+                .WithContestsAbove11(new List<Contest> { relatedContest })
+                .Build();
             var alpha2 = BaseContestDataBuilder.Create().WithName("Concurso Alpha2").WithData(new DateTime(2026, 2, 10)).Build();
             var beta = BaseContestDataBuilder.Create().WithName("Concurso Beta").WithData(new DateTime(2026, 3, 10)).Build();
             context.BaseContests.AddRange(alpha1, alpha2, beta);
@@ -210,6 +215,7 @@ namespace Lotofacil.Tests.Features.BaseContests
             // Assert
             result.Count.ShouldBe(1);
             result[0].Name.ShouldBe("Concurso Alpha1");
+            result[0].ContestsAbove11Count.ShouldBe(1);
         }
 
         [Fact(DisplayName = "SUCESSO - Deve retornar o total de registros filtrados por nome")]

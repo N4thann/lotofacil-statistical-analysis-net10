@@ -122,12 +122,12 @@ namespace Lotofacil.Application.Common
             return memoryStream;
         }
 
-        public MemoryStream GenerateExcelForBaseContest(IEnumerable<BaseContest> data)
+        public MemoryStream GenerateExcelForBaseContest(IEnumerable<BaseContestSummaryViewModel> data)
         {
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Concursos Base");
 
-            var headers = new List<(string Header, Func<BaseContest, object?> ValueSelector)>
+            var headers = new List<(string Header, Func<BaseContestSummaryViewModel, object?> ValueSelector)>
                 {
                     ("Concurso Base", log => log.Name),
                     ("Números", log => log.Numbers),
@@ -306,7 +306,7 @@ namespace Lotofacil.Application.Common
             return dash3;
         }
 
-        public PagedResultViewModel<BaseContest> PagedResultDash2(List<BaseContest> baseContests, int totalCount, string? name, DateTime? startDate, DateTime? endDate, int page, int pageSize)
+        public PagedResultViewModel<BaseContestSummaryViewModel> PagedResultDash2(List<BaseContestSummaryViewModel> baseContests, int totalCount, string? name, DateTime? startDate, DateTime? endDate, int page, int pageSize)
         {
             Log.Debug("Construindo modelo paginado para Dashboard 2. Filtros: Nome={Name}, DataInicial={StartDate}, DataFinal={EndDate}, Página={Page}, TamanhoPerPage={PageSize}",
                 name ?? "todos", startDate?.ToString() ?? "sem limite inicial", endDate?.ToString() ?? "sem limite final", page, pageSize);
@@ -316,7 +316,7 @@ namespace Lotofacil.Application.Common
             Log.Debug("Total de registros: {TotalCount}, Total de páginas calculadas: {TotalPages}",
                 totalCount, totalPages);
 
-            var model = new PagedResultViewModel<BaseContest>
+            var model = new PagedResultViewModel<BaseContestSummaryViewModel>
             {
                 Datas = baseContests,
                 CurrentPage = page,

@@ -24,7 +24,7 @@ namespace Lotofacil.Application.Features.BaseContests
 
         IQueryable<BaseContest> GetQueryableBaseContests();
 
-        Task<List<BaseContest>> GetFilteredBaseContestsAsync(string? name, DateTime? startDate, DateTime? endDate, int pageNumber, int pageSize);
+        Task<List<BaseContestSummaryViewModel>> GetFilteredBaseContestsAsync(string? name, DateTime? startDate, DateTime? endDate, int pageNumber, int pageSize);
 
         Task<int> GetTotalCountAsync(string? name, DateTime? startDate, DateTime? endDate);
 

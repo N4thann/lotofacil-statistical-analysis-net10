@@ -1,4 +1,4 @@
-﻿@model Lotofacil.Application.Common.ViewsModel.PagedResultViewModel<BaseContest>
+﻿@model Lotofacil.Application.Common.ViewsModel.PagedResultViewModel<Lotofacil.Application.Common.ViewsModel.BaseContestSummaryViewModel>
 
 @{
     ViewData["Title"] = "Dashboard 2";
@@ -80,7 +80,7 @@
                     <td>@log.Name</td>
                     <td>@log.Data.ToString("yyyy-MM-dd")</td>
                     <td>@log.Numbers</td>
-                    <td>@log.ContestsAbove11.Count()</td>
+                    <td>@log.ContestsAbove11Count</td>
                     <td>@log.TopTenNumbers</td>
                         </tr>
                     }

@@ -151,7 +151,7 @@ namespace Lotofacil.Application.Features.BaseContests
             return _repository.GetAllQueryable();
         }
 
-        public async Task<List<BaseContest>> GetFilteredBaseContestsAsync(string? name, DateTime? startDate, DateTime? endDate, int pageNumber, int pageSize)
+        public async Task<List<BaseContestSummaryViewModel>> GetFilteredBaseContestsAsync(string? name, DateTime? startDate, DateTime? endDate, int pageNumber, int pageSize)
         {
             _logger.LogDebug("Filtrando BaseContests com os seguintes parâmetros - Nome: {Name}, Data Inicial: {StartDate}, Data Final: {EndDate}, Página: {Page}, Tamanho da Página: {PageSize}",
                 name, startDate, endDate, pageNumber, pageSize);
@@ -168,11 +168,26 @@ namespace Lotofacil.Application.Features.BaseContests
                 if (endDate.HasValue)
                     query = query.Where(log => log.Data <= endDate.Value);
 
+                // Projeta direto para o resumo em vez de Include(ContestsAbove11): a coleção completa nunca
+                // é necessária aqui (só a contagem), então o Count() vira um COUNT correlacionado no SQL em
+                // vez de trazer todas as linhas filhas da página inteira.
                 var result = await query
-                    .Include(x => x.ContestsAbove11)
                     .OrderBy(log => log.Data)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
+                    .Select(bc => new BaseContestSummaryViewModel
+                    {
+                        Name = bc.Name,
+                        Data = bc.Data,
+                        Numbers = bc.Numbers,
+                        Hit11 = bc.Hit11,
+                        Hit12 = bc.Hit12,
+                        Hit13 = bc.Hit13,
+                        Hit14 = bc.Hit14,
+                        Hit15 = bc.Hit15,
+                        TopTenNumbers = bc.TopTenNumbers,
+                        ContestsAbove11Count = bc.ContestsAbove11.Count()
+                    })
                     .ToListAsync();
 
                 _logger.LogDebug("Consulta de BaseContests filtrada retornou {Count} resultados.", result.Count);

@@ -51,9 +51,9 @@ namespace Lotofacil.Application.Common
         /// <summary>
         /// Generates an Excel file containing base contest information.
         /// </summary>
-        /// <param name="data">The collection of base contests to include in the file.</param>
+        /// <param name="data">The collection of base contest summaries to include in the file.</param>
         /// <returns>A memory stream containing the generated Excel file.</returns>
-        MemoryStream GenerateExcelForBaseContest(IEnumerable<BaseContest> data);
+        MemoryStream GenerateExcelForBaseContest(IEnumerable<BaseContestSummaryViewModel> data);
         /// <summary>
         /// Retorna os dois concursos base com melhor eficiência nas comparações.
         /// A eficiência é calculada com base nos acertos de cada concurso.
@@ -69,17 +69,17 @@ namespace Lotofacil.Application.Common
         /// <returns>Um objeto <see cref="Dash3ViewModel"/> preenchido com os dados analisados.</returns>
         Task<Dash3ViewModel> Dash3Analysis(IEnumerable<BaseContest> baseContests);
         /// <summary>
-        /// Retorna um objeto paginado contendo os concursos base filtrados por nome e período.
+        /// Retorna um objeto paginado contendo os resumos de concursos base filtrados por nome e período.
         /// </summary>
-        /// <param name="baseContests">Lista de concursos base filtrados.</param>
+        /// <param name="baseContests">Lista de resumos de concursos base filtrados.</param>
         /// <param name="totalCount">Número total de registros que atendem aos critérios de filtragem.</param>
         /// <param name="name">Nome do concurso para filtro (opcional).</param>
         /// <param name="startDate">Data inicial para filtro (opcional).</param>
         /// <param name="endDate">Data final para filtro (opcional).</param>
         /// <param name="page">Número da página atual.</param>
         /// <param name="pageSize">Quantidade de registros por página.</param>
-        /// <returns>Um objeto <see cref="PagedResultViewModel{BaseContest}"/> contendo os dados paginados.</returns>
-        PagedResultViewModel<BaseContest> PagedResultDash2(List<BaseContest> baseContests, int totalCount, string? name, DateTime? startDate, DateTime? endDate, int page, int pageSize);
+        /// <returns>Um objeto <see cref="PagedResultViewModel{BaseContestSummaryViewModel}"/> contendo os dados paginados.</returns>
+        PagedResultViewModel<BaseContestSummaryViewModel> PagedResultDash2(List<BaseContestSummaryViewModel> baseContests, int totalCount, string? name, DateTime? startDate, DateTime? endDate, int page, int pageSize);
     }   
 }
 /*

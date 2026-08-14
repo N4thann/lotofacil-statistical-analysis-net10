@@ -183,14 +183,19 @@ namespace Lotofacil.Tests.Common
         public void GenerateExcelForBaseContest_WhenDataIsProvided_ShouldProduceCorrectHeadersAndValues()
         {
             // Arrange
-            var baseContest = BaseContestDataBuilder.Create()
-                .WithName("Concurso Base 1")
-                .WithNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15")
-                .WithData(new DateTime(2026, 1, 10))
-                .WithHits(hit11: 1, hit12: 1, hit13: 1, hit14: 1, hit15: 1)
-                .WithTopTenNumbers("01-02-03-04-05-06-07-08-09-10")
-                .Build();
-            var data = new List<BaseContest> { baseContest };
+            var baseContest = new BaseContestSummaryViewModel
+            {
+                Name = "Concurso Base 1",
+                Numbers = "01-02-03-04-05-06-07-08-09-10-11-12-13-14-15",
+                Data = new DateTime(2026, 1, 10),
+                Hit11 = 1,
+                Hit12 = 1,
+                Hit13 = 1,
+                Hit14 = 1,
+                Hit15 = 1,
+                TopTenNumbers = "01-02-03-04-05-06-07-08-09-10"
+            };
+            var data = new List<BaseContestSummaryViewModel> { baseContest };
 
             // Act
             using var stream = _sut.GenerateExcelForBaseContest(data);
@@ -226,7 +231,7 @@ namespace Lotofacil.Tests.Common
         public void GenerateExcelForBaseContest_WhenDataIsEmpty_ShouldProduceOnlyHeaders()
         {
             // Arrange
-            var data = new List<BaseContest>();
+            var data = new List<BaseContestSummaryViewModel>();
 
             // Act
             using var stream = _sut.GenerateExcelForBaseContest(data);
@@ -363,7 +368,9 @@ namespace Lotofacil.Tests.Common
         public void PagedResultDash2_WhenTotalCountIsNotMultipleOfPageSize_ShouldComputeTotalPagesUsingCeiling()
         {
             // Arrange
-            var baseContests = BaseContestDataBuilder.AsList(10);
+            var baseContests = Enumerable.Range(1, 10)
+                .Select(i => new BaseContestSummaryViewModel { Name = $"Concurso {i}" })
+                .ToList();
 
             // Act
             var result = _sut.PagedResultDash2(baseContests, totalCount: 25, name: null, startDate: null, endDate: null, page: 1, pageSize: 10);
@@ -376,7 +383,11 @@ namespace Lotofacil.Tests.Common
         public void PagedResultDash2_ShouldMapFiltersAndPageIntoViewModel()
         {
             // Arrange
-            var baseContests = BaseContestDataBuilder.AsList(2);
+            var baseContests = new List<BaseContestSummaryViewModel>
+            {
+                new() { Name = "Concurso 1" },
+                new() { Name = "Concurso 2" }
+            };
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
 
@@ -395,7 +406,7 @@ namespace Lotofacil.Tests.Common
         public void PagedResultDash2_WhenTotalCountIsZero_ShouldReturnZeroTotalPages()
         {
             // Arrange
-            var baseContests = new List<BaseContest>();
+            var baseContests = new List<BaseContestSummaryViewModel>();
 
             // Act
             var result = _sut.PagedResultDash2(baseContests, totalCount: 0, name: null, startDate: null, endDate: null, page: 1, pageSize: 10);
