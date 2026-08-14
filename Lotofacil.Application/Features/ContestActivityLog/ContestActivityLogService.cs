@@ -33,16 +33,14 @@ namespace Lotofacil.Application.Features.ContestActivityLogs
             var logs = await _repository.GetAllQueryable()
                 .Where(log => log.BaseContestName.Contains(baseContestName))
                 .ToListAsync();
-            int deletedCount = 0;
 
             foreach (var log in logs)
             {
                 contestLog.Debug("Excluindo log com ID {LogId} relacionado ao concurso base {BaseContestName}", log.Id, baseContestName);
                 logRepository.Delete(log);
-                deletedCount++;
             }
             await _unitOfWork.CompleteAsync();
-            contestLog.Information("Exclusão concluída: {DeletedCount} logs relacionados ao concurso base {BaseContestName} foram removidos", deletedCount, baseContestName);
+            contestLog.Information("Exclusão concluída: {DeletedCount} logs relacionados ao concurso base {BaseContestName} foram removidos", logs.Count, baseContestName);
         }
 
         public async Task<List<ContestActivityLog>> GetFilteredContestActivityLogsAsync(string? name, DateTime? startDate, DateTime? endDate, int pageNumber, int pageSize)

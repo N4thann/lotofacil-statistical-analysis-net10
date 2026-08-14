@@ -91,7 +91,7 @@ namespace Lotofacil.Application.Features.Contests
                 .Where(c => ids.Contains(c.Id))
                 .ToListAsync();
 
-            var missingIds = ids.Except(contests.Select(c => c.Id)).ToList();
+            var missingIds = ids.Distinct().Except(contests.Select(c => c.Id)).ToList();
             if (missingIds.Any())
             {
                 Log.Warning("Concursos com os seguintes IDs não foram encontrados: {MissingIds}", string.Join(", ", missingIds));

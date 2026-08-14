@@ -32,5 +32,24 @@ namespace Lotofacil.Tests.Repositories
             var count = await readContext.ContestActivityLogs.CountAsync();
             count.ShouldBe(1);
         }
+
+        [Fact(DisplayName = "SUCESSO - Deve propagar a exceção de forma síncrona quando a gravação falha")]
+        public void SaveAdd_WhenSaveChangesFails_ShouldPropagateExceptionSynchronously()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            using var context = new ApplicationDbContext(options);
+            context.Dispose(); // context disposed before use forces SaveChangesAsync to throw synchronously from SaveAdd
+            var sut = new Repository<ContestActivityLog>(context);
+            var log = ContestActivityLogDataBuilder.Create().Build();
+
+            // Act
+            var act = () => sut.SaveAdd(log);
+
+            // Assert
+            Should.Throw<ObjectDisposedException>(act);
+        }
     }
 }

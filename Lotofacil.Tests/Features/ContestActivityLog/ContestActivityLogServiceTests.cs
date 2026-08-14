@@ -88,6 +88,7 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
 
             // Assert
             result.Count.ShouldBe(1);
+            // ordenação decrescente por data — mais recente primeiro
             result[0].Name.ShouldBe("Concurso Alpha2");
         }
 

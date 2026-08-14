@@ -36,10 +36,14 @@ namespace Lotofacil.Tests.Repositories
         {
             // Arrange
             using var context = InMemoryDbContextFactory.Create();
+            var seeded = BaseContestDataBuilder.Create().Build();
+            context.BaseContests.Add(seeded);
+            await context.SaveChangesAsync();
+
             var sut = new BaseContestRepository(context);
 
             // Act
-            var result = await sut.GetByIdAsync(999);
+            var result = await sut.GetByIdAsync(seeded.Id + 1);
 
             // Assert
             result.ShouldBeNull();
