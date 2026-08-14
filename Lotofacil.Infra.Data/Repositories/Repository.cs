@@ -55,8 +55,13 @@ namespace Lotofacil.Infra.Data.Repositories
 
         public void SaveAdd(T entity)
         {
-            _context.Set<T>().AddAsync(entity);
-            _context.SaveChangesAsync();
+            // Interface exige void síncrono (usado a partir de métodos não-async como
+            // BaseContestService.Create/ContestService.Create). GetAwaiter().GetResult() bloqueia até a
+            // gravação terminar de verdade e propaga qualquer exceção de forma síncrona para o chamador
+            // (os try/catch existentes em BaseContestService.Create dependem disso) — em vez do
+            // fire-and-forget anterior, que retornava antes da gravação completar e engolia exceções.
+            _context.Set<T>().AddAsync(entity).AsTask().GetAwaiter().GetResult();
+            _context.SaveChangesAsync().GetAwaiter().GetResult();
         }
     }
 }
