@@ -11,34 +11,36 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
 {
     public class ContestActivityLogServiceTests
     {
-        private readonly IRepository<Lotofacil.Domain.Entities.ContestActivityLog> _repositoryMock;
         private readonly IUnitOfWork _unitOfWorkMock;
-        private readonly ContestActivityLogService _sut;
 
         public ContestActivityLogServiceTests()
         {
-            _repositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.ContestActivityLog>>();
             _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-            _sut = new ContestActivityLogService(_repositoryMock, _unitOfWorkMock);
         }
 
         [Fact(DisplayName = "SUCESSO - Deve excluir somente os logs cujo nome do concurso base contém o nome informado")]
         public async Task DeleteAllReferencesOfLogByBaseContest_WhenCalled_ShouldDeleteOnlyMatchingLogsByContains()
         {
             // Arrange
+            using var context = InMemoryDbContextFactory.Create();
             var log1 = ContestActivityLogDataBuilder.Create().WithBaseContestName("Concurso Base 1").Build();
             var log2 = ContestActivityLogDataBuilder.Create().WithBaseContestName("Concurso Base 10").Build();
             var log3 = ContestActivityLogDataBuilder.Create().WithBaseContestName("Concurso Base 2").Build();
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.ContestActivityLog> { log1, log2, log3 });
+            context.ContestActivityLogs.AddRange(log1, log2, log3);
+            await context.SaveChangesAsync();
+
+            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
             var logRepositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.ContestActivityLog>>();
             _unitOfWorkMock.Repository<Lotofacil.Domain.Entities.ContestActivityLog>().Returns(logRepositoryMock);
+            var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act
-            await _sut.DeleteAllReferencesOfLogByBaseContest("Concurso Base 1");
+            await sut.DeleteAllReferencesOfLogByBaseContest("Concurso Base 1");
 
             // Assert
-            // "Concurso Base 10" também é excluído porque BaseContestName.Contains("Concurso Base 1") é verdadeiro —
-            // comportamento real documentado aqui, não corrigido nesta etapa (ver design doc).
+            // "Concurso Base 10" também é excluído porque BaseContestName.Contains("Concurso Base 1") é
+            // verdadeiro — comportamento real preservado (não corrigido nesta etapa, ver design doc);
+            // só a filtragem migrou de memória para SQL.
             logRepositoryMock.Received(1).Delete(log1);
             logRepositoryMock.Received(1).Delete(log2);
             logRepositoryMock.DidNotReceive().Delete(log3);
@@ -49,13 +51,18 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
         public async Task DeleteAllReferencesOfLogByBaseContest_WhenNoLogsMatch_ShouldNotDeleteAnything()
         {
             // Arrange
+            using var context = InMemoryDbContextFactory.Create();
             var log1 = ContestActivityLogDataBuilder.Create().WithBaseContestName("Concurso Base 2").Build();
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.ContestActivityLog> { log1 });
+            context.ContestActivityLogs.Add(log1);
+            await context.SaveChangesAsync();
+
+            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
             var logRepositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.ContestActivityLog>>();
             _unitOfWorkMock.Repository<Lotofacil.Domain.Entities.ContestActivityLog>().Returns(logRepositoryMock);
+            var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act
-            await _sut.DeleteAllReferencesOfLogByBaseContest("Concurso Base 1");
+            await sut.DeleteAllReferencesOfLogByBaseContest("Concurso Base 1");
 
             // Assert
             logRepositoryMock.DidNotReceiveWithAnyArgs().Delete(default!);
@@ -81,7 +88,7 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
 
             // Assert
             result.Count.ShouldBe(1);
-            result[0].Name.ShouldBe("Concurso Alpha2"); // ordenação decrescente por data — mais recente primeiro
+            result[0].Name.ShouldBe("Concurso Alpha2");
         }
 
         [Fact(DisplayName = "SUCESSO - Deve retornar o total de registros filtrados por nome")]
