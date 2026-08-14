@@ -26,6 +26,12 @@ namespace Lotofacil.Infra.Data.EntityConfiguration
             builder.Property(b => b.LastProcessedMainJob)
                 .HasColumnName("LastProcessedMainJob")
                 .IsRequired(false);
+
+            // Índices de performance (Etapa 3): Name/Data usados em filtros e ordenação de listagens;
+            // LastProcessedMainJob é filtrada a cada execução do MainJobHandler (cron de 4 em 4 minutos).
+            builder.HasIndex(b => b.Name);
+            builder.HasIndex(b => b.Data);
+            builder.HasIndex(b => b.LastProcessedMainJob);
         }
     }
 }

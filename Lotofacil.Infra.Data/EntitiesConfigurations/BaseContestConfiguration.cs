@@ -10,6 +10,10 @@ namespace Lotofacil.Infra.Data.EntityConfiguration
         {
             builder.ToTable("BaseContest");
 
+            // Índices de performance (Etapa 3): Name/Data usados em filtros e ordenação de listagens.
+            builder.HasIndex(b => b.Name);
+            builder.HasIndex(b => b.Data);
+
             // Configuração dos atributos Hit11 a Hit15
             builder.Property(b => b.Hit11)
                    .HasColumnName("Hit11");

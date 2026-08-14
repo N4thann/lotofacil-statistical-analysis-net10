@@ -10,6 +10,10 @@ namespace Lotofacil.Infra.Data.EntityConfiguration
         {
             builder.ToTable("ContestActivityLog");
 
+            // Índice de performance (Etapa 3): usado com .Contains() em filtros/exclusão por nome de
+            // concurso base — ajuda em igualdade/prefixo, mesmo não cobrindo buscas livres no meio da string.
+            builder.HasIndex(c => c.BaseContestName);
+
             builder.Property(c => c.BaseContestName)
                 .HasColumnName("BaseContestName")
                 .HasMaxLength(20) 
