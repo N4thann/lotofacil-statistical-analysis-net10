@@ -27,14 +27,9 @@ namespace Lotofacil.Infra.Data.Repositories
 
         public async Task<BaseContest> GetByIdAsync(int id)
         {
-            var baseContest = await _context.BaseContests.FindAsync(id);
-            if (baseContest != null)
-            {
-                await _context.Entry(baseContest)
-                    .Collection(bc => bc.ContestsAbove11)
-                    .LoadAsync();
-            }
-            return baseContest;
+            return await _context.BaseContests
+                .Include(bc => bc.ContestsAbove11)
+                .FirstOrDefaultAsync(bc => bc.Id == id);
         }
     }
 }
