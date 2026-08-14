@@ -4,7 +4,9 @@ using Lotofacil.Application.Features.Contests;
 using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
+using Lotofacil.Infra.Data.Repositories;
 using Lotofacil.Tests.DataBuilder;
+using Lotofacil.Tests.TestSupport;
 using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 using Shouldly;
@@ -138,21 +140,25 @@ namespace Lotofacil.Tests.Features.Contests
         public async Task AnalisarConcursos_WhenIdsAreValid_ShouldComputeStatistics()
         {
             // Arrange
-            var contestA = ContestDataBuilder.Create().WithId(1).Build();
-            var contestB = ContestDataBuilder.Create().WithId(2).Build();
-            _repositoryMock.GetByIdAsync(1).Returns(contestA);
-            _repositoryMock.GetByIdAsync(2).Returns(contestB);
+            using var context = InMemoryDbContextFactory.Create();
+            var contestA = ContestDataBuilder.Create().WithNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15").Build();
+            var contestB = ContestDataBuilder.Create().WithNumbers("01-02-03-04-05-06-07-08-09-10-11-12-13-14-16").Build();
+            context.Contests.AddRange(contestA, contestB);
+            await context.SaveChangesAsync();
+
+            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var sut = new ContestService(realRepository, _contestMSMock, _cache);
             _contestMSMock.ConvertFormattedStringToList(contestA.Numbers)
                 .Returns(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
             _contestMSMock.ConvertFormattedStringToList(contestB.Numbers)
                 .Returns(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16 });
-            var request = new ContestModalRequestDTO(new List<int> { 1, 2 });
+            var request = new ContestModalRequestDTO(new List<int> { contestA.Id, contestB.Id });
 
             // Act
-            var result = await _sut.AnalisarConcursos(request);
+            var result = await sut.AnalisarConcursos(request);
 
             // Assert
-            result.ContestsName.ShouldBe(new List<string> { contestA.Name, contestB.Name });
+            result.ContestsName.OrderBy(n => n).ShouldBe(new List<string> { contestA.Name, contestB.Name }.OrderBy(n => n));
             result.EvenNumbersAveragePercentage.ShouldBe(50);
             result.OddNumbersAveragePercentage.ShouldBe(50);
             result.MultiplesOfThreeAveragePercentage.ShouldBe(30);
@@ -164,15 +170,18 @@ namespace Lotofacil.Tests.Features.Contests
         public async Task AnalisarConcursos_WhenSomeIdsAreNotFound_ShouldSkipMissingContests()
         {
             // Arrange
-            var contestA = ContestDataBuilder.Create().WithId(1).Build();
-            _repositoryMock.GetByIdAsync(1).Returns(contestA);
-            _repositoryMock.GetByIdAsync(999).Returns((Lotofacil.Domain.Entities.Contest)null!);
-            _contestMSMock.ConvertFormattedStringToList(contestA.Numbers)
-                .Returns(new List<int> { 1, 2, 3 });
-            var request = new ContestModalRequestDTO(new List<int> { 1, 999 });
+            using var context = InMemoryDbContextFactory.Create();
+            var contestA = ContestDataBuilder.Create().Build();
+            context.Contests.Add(contestA);
+            await context.SaveChangesAsync();
+
+            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var sut = new ContestService(realRepository, _contestMSMock, _cache);
+            _contestMSMock.ConvertFormattedStringToList(contestA.Numbers).Returns(new List<int> { 1, 2, 3 });
+            var request = new ContestModalRequestDTO(new List<int> { contestA.Id, 999 });
 
             // Act
-            var result = await _sut.AnalisarConcursos(request);
+            var result = await sut.AnalisarConcursos(request);
 
             // Assert
             result.ContestsName.ShouldBe(new List<string> { contestA.Name });
@@ -182,12 +191,13 @@ namespace Lotofacil.Tests.Features.Contests
         public async Task AnalisarConcursos_WhenNoValidContestsFound_ShouldReturnEmptyResponse()
         {
             // Arrange
-            _repositoryMock.GetByIdAsync(998).Returns((Lotofacil.Domain.Entities.Contest)null!);
-            _repositoryMock.GetByIdAsync(999).Returns((Lotofacil.Domain.Entities.Contest)null!);
+            using var context = InMemoryDbContextFactory.Create();
+            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var sut = new ContestService(realRepository, _contestMSMock, _cache);
             var request = new ContestModalRequestDTO(new List<int> { 998, 999 });
 
             // Act
-            var result = await _sut.AnalisarConcursos(request);
+            var result = await sut.AnalisarConcursos(request);
 
             // Assert
             result.ContestsName.ShouldBeEmpty();
@@ -196,6 +206,30 @@ namespace Lotofacil.Tests.Features.Contests
             result.Top5MostFrequentNumbers.ShouldBeEmpty();
             result.Top5LeastFrequentNumbers.ShouldBeEmpty();
             result.MultiplesOfThreeAveragePercentage.ShouldBe(0);
+        }
+
+        [Fact(DisplayName = "SUCESSO - Não deve contar o mesmo concurso duas vezes quando o ID aparece duplicado na requisição")]
+        public async Task AnalisarConcursos_WhenRequestHasDuplicateIds_ShouldNotDoubleCountContest()
+        {
+            // Arrange
+            using var context = InMemoryDbContextFactory.Create();
+            var contestA = ContestDataBuilder.Create().Build();
+            context.Contests.Add(contestA);
+            await context.SaveChangesAsync();
+
+            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var sut = new ContestService(realRepository, _contestMSMock, _cache);
+            _contestMSMock.ConvertFormattedStringToList(contestA.Numbers).Returns(new List<int> { 1, 2, 3 });
+            var request = new ContestModalRequestDTO(new List<int> { contestA.Id, contestA.Id });
+
+            // Act
+            var result = await sut.AnalisarConcursos(request);
+
+            // Assert
+            // A consulta em lote (Where + Contains) retorna cada linha uma única vez, mesmo com ID duplicado
+            // na requisição — diferente do loop antigo, que chamava GetByIdAsync por item da lista e
+            // duplicava o concurso na análise.
+            result.ContestsName.ShouldBe(new List<string> { contestA.Name });
         }
     }
 }

@@ -5,6 +5,7 @@ using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
@@ -86,19 +87,15 @@ namespace Lotofacil.Application.Features.Contests
         {
             Log.Debug("Analisando concursos com os seguintes IDs: {ContestIds}", string.Join(", ", request.Contests));
 
-            var contests = new List<Contest>();
+            var ids = request.Contests;
+            var contests = await _repository.GetAllQueryable()
+                .Where(c => ids.Contains(c.Id))
+                .ToListAsync();
 
-            foreach (var id in request.Contests)
+            var missingIds = ids.Except(contests.Select(c => c.Id)).ToList();
+            if (missingIds.Any())
             {
-                var contest = await _repository.GetByIdAsync(id);
-                if (contest != null)
-                {
-                    contests.Add(contest);
-                }
-                else
-                {
-                    Log.Warning("Concurso com ID {Id} não encontrado.", id);
-                }
+                Log.Warning("Concursos com os seguintes IDs não foram encontrados: {MissingIds}", string.Join(", ", missingIds));
             }
 
             if (!contests.Any())
