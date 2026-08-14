@@ -14,6 +14,10 @@ namespace Lotofacil.Infra.Data.EntityConfiguration
             // concurso base — ajuda em igualdade/prefixo, mesmo não cobrindo buscas livres no meio da string.
             builder.HasIndex(c => c.BaseContestName);
 
+            // Índice de performance (Etapa 3): backa o OrderByDescending(log => log.Data) e os filtros
+            // de intervalo (>=/<=) em ContestActivityLogService.GetFilteredContestActivityLogsAsync/GetTotalCountAsync.
+            builder.HasIndex(c => c.Data);
+
             builder.Property(c => c.BaseContestName)
                 .HasColumnName("BaseContestName")
                 .HasMaxLength(20) 

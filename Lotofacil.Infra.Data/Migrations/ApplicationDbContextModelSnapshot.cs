@@ -135,10 +135,6 @@ namespace Lotofacil.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Data");
-
-                    b.HasIndex("LastProcessedMainJob");
-
                     b.HasIndex("Name");
 
                     b.ToTable("Contest", (string)null);
@@ -192,6 +188,8 @@ namespace Lotofacil.Infra.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseContestName");
+
+                    b.HasIndex("Data");
 
                     b.ToTable("ContestActivityLog", (string)null);
                 });

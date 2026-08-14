@@ -16,14 +16,9 @@ namespace Lotofacil.Infra.Data.Migrations
                 column: "BaseContestName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contest_Data",
-                table: "Contest",
+                name: "IX_ContestActivityLog_Data",
+                table: "ContestActivityLog",
                 column: "Data");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Contest_LastProcessedMainJob",
-                table: "Contest",
-                column: "LastProcessedMainJob");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contest_Name",
@@ -49,12 +44,8 @@ namespace Lotofacil.Infra.Data.Migrations
                 table: "ContestActivityLog");
 
             migrationBuilder.DropIndex(
-                name: "IX_Contest_Data",
-                table: "Contest");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Contest_LastProcessedMainJob",
-                table: "Contest");
+                name: "IX_ContestActivityLog_Data",
+                table: "ContestActivityLog");
 
             migrationBuilder.DropIndex(
                 name: "IX_Contest_Name",

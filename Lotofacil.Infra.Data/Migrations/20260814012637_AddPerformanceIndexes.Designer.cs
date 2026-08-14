@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lotofacil.Infra.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260814011353_AddPerformanceIndexes")]
+    [Migration("20260814012637_AddPerformanceIndexes")]
     partial class AddPerformanceIndexes
     {
         /// <inheritdoc />
@@ -138,10 +138,6 @@ namespace Lotofacil.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Data");
-
-                    b.HasIndex("LastProcessedMainJob");
-
                     b.HasIndex("Name");
 
                     b.ToTable("Contest", (string)null);
@@ -195,6 +191,8 @@ namespace Lotofacil.Infra.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BaseContestName");
+
+                    b.HasIndex("Data");
 
                     b.ToTable("ContestActivityLog", (string)null);
                 });

@@ -27,11 +27,8 @@ namespace Lotofacil.Infra.Data.EntityConfiguration
                 .HasColumnName("LastProcessedMainJob")
                 .IsRequired(false);
 
-            // Índices de performance (Etapa 3): Name/Data usados em filtros e ordenação de listagens;
-            // LastProcessedMainJob é filtrada a cada execução do MainJobHandler (cron de 4 em 4 minutos).
+            // Índice de performance (Etapa 3): Name é usado em buscas de igualdade no ContestValidator.
             builder.HasIndex(b => b.Name);
-            builder.HasIndex(b => b.Data);
-            builder.HasIndex(b => b.LastProcessedMainJob);
         }
     }
 }
