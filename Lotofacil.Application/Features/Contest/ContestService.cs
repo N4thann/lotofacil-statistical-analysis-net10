@@ -4,7 +4,6 @@ using Lotofacil.Application.Common.ViewsModel;
 using Lotofacil.Application.Features.Contests.DTO;
 using Lotofacil.Domain.Entities;
 using Lotofacil.Domain.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
