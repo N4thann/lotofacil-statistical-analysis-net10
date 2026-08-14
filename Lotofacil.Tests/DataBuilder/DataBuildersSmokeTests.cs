@@ -1,4 +1,3 @@
-using Lotofacil.Tests.DataBuilder;
 using Lotofacil.Tests.TestSupport;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;

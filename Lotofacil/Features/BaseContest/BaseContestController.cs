@@ -84,43 +84,18 @@ namespace Lotofacil.Web.Features.BaseContests
             return View(bcontest);
         }
 
-        [HttpGet()]
-        public async Task<IActionResult> Edit(int id)
-        {
-            return View(await _baseContestService.ShowOnScreen(id));
-        }
-
-        [HttpPost()]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ContestViewModel baseContestVM)
-        {
-            ValidationResult result = await _validator.ValidateAsync(baseContestVM);
-
-            if (!result.IsValid)
-            {
-                result.AddToModelState(this.ModelState);
-                return View("Edit", baseContestVM);
-            }
-
-            try
-            {
-                await _baseContestService.EditBaseContestAsync(baseContestVM);
-                TempData["notice"] = "Concurso Base Editado com Sucesso!";
-                return RedirectToAction("List", "BaseContest");
-
-            }
-            catch (Exception ex)
-            {
-                return View("Error", new ErrorViewModel("Erro ao editar o registro.",
-                    ex.Message, 1));
-            }
-        }
-
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var contestViewModel = await _baseContestService.ShowOnScreen(id);
-            return View(contestViewModel);
+            try
+            {
+                var contestViewModel = await _baseContestService.ShowOnScreen(id);
+                return View(contestViewModel);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return View("Error", new ErrorViewModel(ex.Message, null, 4)); // Código que representa ErrorType.NotFound
+            }
         }
 
         [HttpPost(), ActionName("Delete")]//Quando for chamado esse método tem que chamar por "delete" graças ao ActionName

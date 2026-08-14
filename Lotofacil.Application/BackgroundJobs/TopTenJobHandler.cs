@@ -66,7 +66,7 @@ namespace Lotofacil.Application.BackgroundJobs
 
                         if (baseContest.TotalProcessed < totalCountContest || baseContest.TotalProcessed is null)
                         {
-                            if (baseContest.ContestsAbove11 is null || !baseContest.ContestsAbove11.Any())
+                            if (!baseContest.ContestsAbove11.Any())
                             {
                                 Log.Debug("Concurso Base {Name} não tem concursos adicionados", baseContest.Name);
                                 continue;

@@ -54,34 +54,6 @@ namespace Lotofacil.Application.Features.BaseContests
                 throw;
             }
         }
-        public async Task EditBaseContestAsync(ContestViewModel contestVM)
-        {
-            _logger.LogDebug("Iniciando edição do Concurso Base {ConcursoBaseId}", contestVM.Id);
-
-            var baseContest = await _repository.GetByIdAsync(contestVM.Id);
-            if (baseContest == null)
-            {
-                _logger.LogWarning("Tentativa de editar concurso base inexistente {ConcursoBaseId}", contestVM.Id);
-                throw new KeyNotFoundException($"Concurso base com ID {contestVM.Id} não encontrado.");
-            }
-
-            _logger.LogDebug("Atualizando propriedades do concurso base ID {ConcursoBaseId}. Nome anterior: {OldName}, Novo nome: {NewName}",
-                contestVM.Id, baseContest.Name, contestVM.Name);
-
-            baseContest.Name = contestVM.Name;
-            baseContest.Data = _contestMS.SetDataHour(contestVM.Data);
-            baseContest.Numbers = _contestMS.FormatNumbersToSave(contestVM.Numbers);
-            try
-            {
-                await _repository.SaveUpdateAsync(baseContest);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Erro ao atualizar o Concurso Base de Id: {Id}, Mensagem de erro: {message}, StackTrace: {StackTrace}", contestVM.Id, ex.Message, ex.StackTrace);
-                throw;
-            }
-        }
-
         //Esse método serve para recuperar uma BaseContest para ser mostrado na tela, de forma que respeite as dependencias da camada Presentation
         public async Task<ContestViewModel> ShowOnScreen(int id)
         {

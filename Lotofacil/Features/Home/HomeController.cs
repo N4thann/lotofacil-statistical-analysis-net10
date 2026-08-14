@@ -72,6 +72,9 @@ namespace Lotofacil.Web.Features.Home
 
         public async Task<IActionResult> Dash2(string? name, DateTime? startDate, DateTime? endDate, int page = 1, int pageSize = 10)
         {
+            page = Math.Max(1, page);
+            pageSize = pageSize < 1 ? 10 : pageSize;
+
             var baseContests = await _baseContestService.GetFilteredBaseContestsAsync(name, startDate, endDate, page, pageSize);
             var totalCount = await _baseContestService.GetTotalCountAsync(name, startDate, endDate); // Implementação no serviço para pegar o total de registros
 
@@ -107,6 +110,15 @@ namespace Lotofacil.Web.Features.Home
             var dash3 = await _contestMS.Dash3Analysis(baseContests);
 
             return View(dash3);
+        }
+
+        /// <summary>
+        /// Exibe a tela de erro genérica. Destino de <c>app.UseExceptionHandler("/Home/Error")</c>
+        /// (<c>Program.cs</c>) para qualquer exceção não tratada em produção.
+        /// </summary>
+        public IActionResult Error()
+        {
+            return View("Error", new ErrorViewModel("Ocorreu um erro inesperado.", null, 1));
         }
     }
 }

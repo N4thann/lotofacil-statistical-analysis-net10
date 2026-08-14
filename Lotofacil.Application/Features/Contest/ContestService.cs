@@ -41,7 +41,7 @@ namespace Lotofacil.Application.Features.Contests
                     _ => contests.OrderByDescending(c => c.Data),
                 };
 
-                if (contests is null || contests.Any())
+                if (contests.Any())
                 {
                     var cacheOptions = new MemoryCacheEntryOptions
                     {

@@ -12,8 +12,6 @@ namespace Lotofacil.Application.Features.BaseContests
     {
         void Create(ContestViewModel contestVM);
 
-        Task EditBaseContestAsync(ContestViewModel contestVM);
-
         Task DeleteByIdAsync(int id);
 
         Task<ContestViewModel> ShowOnScreen(int id);

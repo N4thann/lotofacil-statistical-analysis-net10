@@ -15,7 +15,7 @@ namespace Lotofacil.Tests.Features.BaseContests
 {
     public class BaseContestServiceTests
     {
-        private readonly IRepository<Lotofacil.Domain.Entities.BaseContest> _repositoryMock;
+        private readonly IRepository<BaseContest> _repositoryMock;
         private readonly IContestManagementService _contestMSMock;
         private readonly IBaseContestRepository _repositoryBCMock;
         private readonly IContestActivityLogService _activityLSMock;
@@ -24,7 +24,7 @@ namespace Lotofacil.Tests.Features.BaseContests
 
         public BaseContestServiceTests()
         {
-            _repositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.BaseContest>>();
+            _repositoryMock = Substitute.For<IRepository<BaseContest>>();
             _contestMSMock = Substitute.For<IContestManagementService>();
             _repositoryBCMock = Substitute.For<IBaseContestRepository>();
             _activityLSMock = Substitute.For<IContestActivityLogService>();
@@ -59,61 +59,26 @@ namespace Lotofacil.Tests.Features.BaseContests
             _sut.Create(contestVM);
 
             // Assert
-            _repositoryMock.Received(1).SaveAdd(Arg.Is<Lotofacil.Domain.Entities.BaseContest>(b =>
+            _repositoryMock.Received(1).SaveAdd(Arg.Is<BaseContest>(b =>
                 b.Name == "Concurso ABC" &&
                 b.Data == formattedDate &&
                 b.Numbers == "01-02-03-04-05-06-07-08-09-10-11-12-13-14-15"));
         }
 
-        [Fact(DisplayName = "ERRO - Deve logar e relançar a exceção quando o repositório falha ao salvar")]
-        public void Create_WhenRepositoryThrows_ShouldLogErrorAndRethrow()
+        [Fact(DisplayName = "ERRO - Deve relançar a exceção quando o repositório falha ao salvar")]
+        public void Create_WhenRepositoryThrows_ShouldRethrow()
         {
             // Arrange
             var contestVM = new ContestViewModel { Name = "ABC", Data = DateTime.Now, Numbers = "010203040506070809101112131415" };
             _contestMSMock.SetDataHour(Arg.Any<DateTime>()).Returns(DateTime.Now);
             _contestMSMock.FormatNumbersToSave(Arg.Any<string>()).Returns("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15");
-            _repositoryMock.When(r => r.SaveAdd(Arg.Any<Lotofacil.Domain.Entities.BaseContest>())).Do(_ => throw new InvalidOperationException("falha de banco"));
+            _repositoryMock.When(r => r.SaveAdd(Arg.Any<BaseContest>())).Do(_ => throw new InvalidOperationException("falha de banco"));
 
             // Act
             var act = () => _sut.Create(contestVM);
 
             // Assert
             Should.Throw<InvalidOperationException>(act);
-        }
-
-        [Fact(DisplayName = "SUCESSO - Deve atualizar nome, data e números de um concurso base existente")]
-        public async Task EditBaseContestAsync_WhenExists_ShouldUpdateNameDataAndNumbers()
-        {
-            // Arrange
-            var existing = BaseContestDataBuilder.Create().WithId(1).Build();
-            var contestVM = new ContestViewModel { Id = 1, Name = "Novo Nome", Data = new DateTime(2026, 5, 1), Numbers = "010203040506070809101112131415" };
-            _repositoryMock.GetByIdAsync(1).Returns(existing);
-            _contestMSMock.SetDataHour(contestVM.Data).Returns(new DateTime(2026, 5, 1, 20, 0, 0));
-            _contestMSMock.FormatNumbersToSave(contestVM.Numbers).Returns("01-02-03-04-05-06-07-08-09-10-11-12-13-14-15");
-
-            // Act
-            await _sut.EditBaseContestAsync(contestVM);
-
-            // Assert
-            await _repositoryMock.Received(1).SaveUpdateAsync(Arg.Is<Lotofacil.Domain.Entities.BaseContest>(b =>
-                b.Name == "Novo Nome" &&
-                b.Data == new DateTime(2026, 5, 1, 20, 0, 0) &&
-                b.Numbers == "01-02-03-04-05-06-07-08-09-10-11-12-13-14-15"));
-        }
-
-        [Fact(DisplayName = "ERRO - Deve lançar KeyNotFoundException ao editar um concurso base inexistente")]
-        public async Task EditBaseContestAsync_WhenNotFound_ShouldThrowKeyNotFoundException()
-        {
-            // Arrange
-            var contestVM = new ContestViewModel { Id = 999, Name = "X", Data = DateTime.Now, Numbers = "010203040506070809101112131415" };
-            _repositoryMock.GetByIdAsync(999).Returns((Lotofacil.Domain.Entities.BaseContest)null!);
-
-            // Act
-            var act = async () => await _sut.EditBaseContestAsync(contestVM);
-
-            // Assert
-            await Should.ThrowAsync<KeyNotFoundException>(act);
-            await _repositoryMock.DidNotReceiveWithAnyArgs().SaveUpdateAsync(default!);
         }
 
         [Fact(DisplayName = "SUCESSO - Deve mapear o concurso base encontrado para o ViewModel")]
@@ -137,7 +102,7 @@ namespace Lotofacil.Tests.Features.BaseContests
         public async Task ShowOnScreen_WhenNotFound_ShouldThrowKeyNotFoundException()
         {
             // Arrange
-            _repositoryMock.GetByIdAsync(999).Returns((Lotofacil.Domain.Entities.BaseContest)null!);
+            _repositoryMock.GetByIdAsync(999).Returns((BaseContest)null!);
 
             // Act
             var act = async () => await _sut.ShowOnScreen(999);
@@ -179,7 +144,7 @@ namespace Lotofacil.Tests.Features.BaseContests
         public async Task DeleteByIdAsync_WhenNotFound_ShouldThrowKeyNotFoundException()
         {
             // Arrange
-            _repositoryMock.GetByIdAsync(999).Returns((Lotofacil.Domain.Entities.BaseContest)null!);
+            _repositoryMock.GetByIdAsync(999).Returns((BaseContest)null!);
 
             // Act
             var act = async () => await _sut.DeleteByIdAsync(999);
@@ -206,7 +171,7 @@ namespace Lotofacil.Tests.Features.BaseContests
             context.BaseContests.AddRange(alpha1, alpha2, beta);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.BaseContest>(context);
+            var realRepository = new Repository<BaseContest>(context);
             var sut = new BaseContestService(realRepository, _contestMSMock, _repositoryBCMock, _activityLSMock, _loggerMock);
 
             // Act
@@ -229,7 +194,7 @@ namespace Lotofacil.Tests.Features.BaseContests
             context.BaseContests.AddRange(alpha1, alpha2, beta);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.BaseContest>(context);
+            var realRepository = new Repository<BaseContest>(context);
             var sut = new BaseContestService(realRepository, _contestMSMock, _repositoryBCMock, _activityLSMock, _loggerMock);
 
             // Act

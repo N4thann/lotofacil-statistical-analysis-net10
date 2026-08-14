@@ -28,10 +28,10 @@ namespace Lotofacil.Application.Features.ContestActivityLogs
             contestLog.Debug("Iniciando exclusão de logs relacionados ao concurso base");
             var logRepository = _unitOfWork.Repository<ContestActivityLog>();
 
-            // Mesmo filtro .Contains() de antes, agora empurrado para o SQL em vez de trazer a tabela
-            // inteira para a memória. Mantém o comportamento de substring (não corrigido nesta etapa).
+            // Igualdade exata (corrigido na Etapa 4) — antes usava .Contains(), que também excluía
+            // "Concurso Base 10" ao pedir a exclusão de "Concurso Base 1".
             var logs = await _repository.GetAllQueryable()
-                .Where(log => log.BaseContestName.Contains(baseContestName))
+                .Where(log => log.BaseContestName == baseContestName)
                 .ToListAsync();
 
             foreach (var log in logs)

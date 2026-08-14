@@ -18,8 +18,8 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
             _unitOfWorkMock = Substitute.For<IUnitOfWork>();
         }
 
-        [Fact(DisplayName = "SUCESSO - Deve excluir somente os logs cujo nome do concurso base contém o nome informado")]
-        public async Task DeleteAllReferencesOfLogByBaseContest_WhenCalled_ShouldDeleteOnlyMatchingLogsByContains()
+        [Fact(DisplayName = "SUCESSO - Deve excluir somente os logs cujo nome do concurso base é exatamente igual ao informado")]
+        public async Task DeleteAllReferencesOfLogByBaseContest_WhenCalled_ShouldDeleteOnlyExactNameMatch()
         {
             // Arrange
             using var context = InMemoryDbContextFactory.Create();
@@ -29,20 +29,18 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
             context.ContestActivityLogs.AddRange(log1, log2, log3);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
-            var logRepositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.ContestActivityLog>>();
-            _unitOfWorkMock.Repository<Lotofacil.Domain.Entities.ContestActivityLog>().Returns(logRepositoryMock);
+            var realRepository = new Repository<ContestActivityLog>(context);
+            var logRepositoryMock = Substitute.For<IRepository<ContestActivityLog>>();
+            _unitOfWorkMock.Repository<ContestActivityLog>().Returns(logRepositoryMock);
             var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act
             await sut.DeleteAllReferencesOfLogByBaseContest("Concurso Base 1");
 
             // Assert
-            // "Concurso Base 10" também é excluído porque BaseContestName.Contains("Concurso Base 1") é
-            // verdadeiro — comportamento real preservado (não corrigido nesta etapa, ver design doc);
-            // só a filtragem migrou de memória para SQL.
+            // "Concurso Base 10" NÃO é mais excluído — igualdade exata, não substring (bug corrigido na Etapa 4).
             logRepositoryMock.Received(1).Delete(log1);
-            logRepositoryMock.Received(1).Delete(log2);
+            logRepositoryMock.DidNotReceive().Delete(log2);
             logRepositoryMock.DidNotReceive().Delete(log3);
             await _unitOfWorkMock.Received(1).CompleteAsync();
         }
@@ -56,9 +54,9 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
             context.ContestActivityLogs.Add(log1);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
-            var logRepositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.ContestActivityLog>>();
-            _unitOfWorkMock.Repository<Lotofacil.Domain.Entities.ContestActivityLog>().Returns(logRepositoryMock);
+            var realRepository = new Repository<ContestActivityLog>(context);
+            var logRepositoryMock = Substitute.For<IRepository<ContestActivityLog>>();
+            _unitOfWorkMock.Repository<ContestActivityLog>().Returns(logRepositoryMock);
             var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act
@@ -80,7 +78,7 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
             context.ContestActivityLogs.AddRange(alpha1, alpha2, beta);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
+            var realRepository = new Repository<ContestActivityLog>(context);
             var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act
@@ -103,7 +101,7 @@ namespace Lotofacil.Tests.Features.ContestActivityLogs
             context.ContestActivityLogs.AddRange(alpha1, alpha2, beta);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.ContestActivityLog>(context);
+            var realRepository = new Repository<ContestActivityLog>(context);
             var sut = new ContestActivityLogService(realRepository, _unitOfWorkMock);
 
             // Act

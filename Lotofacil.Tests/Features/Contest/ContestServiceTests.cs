@@ -15,14 +15,14 @@ namespace Lotofacil.Tests.Features.Contests
 {
     public class ContestServiceTests : IDisposable
     {
-        private readonly IRepository<Lotofacil.Domain.Entities.Contest> _repositoryMock;
+        private readonly IRepository<Contest> _repositoryMock;
         private readonly IContestManagementService _contestMSMock;
         private readonly MemoryCache _cache;
         private readonly ContestService _sut;
 
         public ContestServiceTests()
         {
-            _repositoryMock = Substitute.For<IRepository<Lotofacil.Domain.Entities.Contest>>();
+            _repositoryMock = Substitute.For<IRepository<Contest>>();
             _contestMSMock = Substitute.For<IContestManagementService>();
             _cache = new MemoryCache(new MemoryCacheOptions());
             _sut = new ContestService(_repositoryMock, _contestMSMock, _cache);
@@ -36,7 +36,7 @@ namespace Lotofacil.Tests.Features.Contests
             // Arrange
             var older = ContestDataBuilder.Create().WithData(new DateTime(2026, 1, 1)).Build();
             var newer = ContestDataBuilder.Create().WithData(new DateTime(2026, 6, 1)).Build();
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.Contest> { older, newer });
+            _repositoryMock.GetAllAsync().Returns(new List<Contest> { older, newer });
 
             // Act
             var result = (await _sut.GetContestsOrderedAsync("DateDesc")).ToList();
@@ -52,7 +52,7 @@ namespace Lotofacil.Tests.Features.Contests
             // Arrange
             var older = ContestDataBuilder.Create().WithData(new DateTime(2026, 1, 1)).Build();
             var newer = ContestDataBuilder.Create().WithData(new DateTime(2026, 6, 1)).Build();
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.Contest> { newer, older });
+            _repositoryMock.GetAllAsync().Returns(new List<Contest> { newer, older });
 
             // Act
             var result = (await _sut.GetContestsOrderedAsync("DateAsc")).ToList();
@@ -68,7 +68,7 @@ namespace Lotofacil.Tests.Features.Contests
             // Arrange
             var older = ContestDataBuilder.Create().WithData(new DateTime(2026, 1, 1)).Build();
             var newer = ContestDataBuilder.Create().WithData(new DateTime(2026, 6, 1)).Build();
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.Contest> { older, newer });
+            _repositoryMock.GetAllAsync().Returns(new List<Contest> { older, newer });
 
             // Act
             var result = (await _sut.GetContestsOrderedAsync("qualquer-coisa")).ToList();
@@ -97,7 +97,7 @@ namespace Lotofacil.Tests.Features.Contests
         public async Task GetContestsOrderedAsync_WhenRepositoryReturnsEmpty_ShouldReturnEmptyWithoutCaching()
         {
             // Arrange
-            _repositoryMock.GetAllAsync().Returns(new List<Lotofacil.Domain.Entities.Contest>());
+            _repositoryMock.GetAllAsync().Returns(new List<Contest>());
 
             // Act
             var first = await _sut.GetContestsOrderedAsync("DateDesc");
@@ -128,7 +128,7 @@ namespace Lotofacil.Tests.Features.Contests
             await _sut.GetContestsOrderedAsync("DateDesc");
 
             // Assert
-            _repositoryMock.Received(1).SaveAdd(Arg.Is<Lotofacil.Domain.Entities.Contest>(c =>
+            _repositoryMock.Received(1).SaveAdd(Arg.Is<Contest>(c =>
                 c.Name == "Concurso XYZ" &&
                 c.Data == formattedDate &&
                 c.Numbers == "01-02-03-04-05-06-07-08-09-10-11-12-13-14-15"));
@@ -146,7 +146,7 @@ namespace Lotofacil.Tests.Features.Contests
             context.Contests.AddRange(contestA, contestB);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var realRepository = new Repository<Contest>(context);
             var sut = new ContestService(realRepository, _contestMSMock, _cache);
             _contestMSMock.ConvertFormattedStringToList(contestA.Numbers)
                 .Returns(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
@@ -175,7 +175,7 @@ namespace Lotofacil.Tests.Features.Contests
             context.Contests.Add(contestA);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var realRepository = new Repository<Contest>(context);
             var sut = new ContestService(realRepository, _contestMSMock, _cache);
             _contestMSMock.ConvertFormattedStringToList(contestA.Numbers).Returns(new List<int> { 1, 2, 3 });
             var request = new ContestModalRequestDTO(new List<int> { contestA.Id, 999 });
@@ -192,7 +192,7 @@ namespace Lotofacil.Tests.Features.Contests
         {
             // Arrange
             using var context = InMemoryDbContextFactory.Create();
-            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var realRepository = new Repository<Contest>(context);
             var sut = new ContestService(realRepository, _contestMSMock, _cache);
             var request = new ContestModalRequestDTO(new List<int> { 998, 999 });
 
@@ -217,7 +217,7 @@ namespace Lotofacil.Tests.Features.Contests
             context.Contests.Add(contestA);
             await context.SaveChangesAsync();
 
-            var realRepository = new Repository<Lotofacil.Domain.Entities.Contest>(context);
+            var realRepository = new Repository<Contest>(context);
             var sut = new ContestService(realRepository, _contestMSMock, _cache);
             _contestMSMock.ConvertFormattedStringToList(contestA.Numbers).Returns(new List<int> { 1, 2, 3 });
             var request = new ContestModalRequestDTO(new List<int> { contestA.Id, contestA.Id });

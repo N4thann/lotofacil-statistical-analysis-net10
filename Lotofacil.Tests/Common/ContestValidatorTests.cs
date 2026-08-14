@@ -164,5 +164,35 @@ namespace Lotofacil.Tests.Common
             result.IsValid.ShouldBeFalse();
             result.Errors.ShouldContain(e => e.PropertyName == "Data");
         }
+
+        [Fact(DisplayName = "ERRO - Deve falhar quando os números contêm uma dezena duplicada")]
+        public async Task ValidateAsync_WhenNumbersHaveADuplicateDezena_ShouldFail()
+        {
+            // Arrange
+            var model = ValidModel();
+            model.Numbers = "010102030405060708091011121314"; // "01" repetido, 30 caracteres
+
+            // Act
+            ValidationResult result = await _sut.ValidateAsync(model);
+
+            // Assert
+            result.IsValid.ShouldBeFalse();
+            result.Errors.ShouldContain(e => e.PropertyName == "Numbers");
+        }
+
+        [Fact(DisplayName = "ERRO - Deve falhar quando uma dezena está fora da faixa 01-25")]
+        public async Task ValidateAsync_WhenADezenaIsOutOfRange_ShouldFail()
+        {
+            // Arrange
+            var model = ValidModel();
+            model.Numbers = "010203040506070809101112131426"; // última dezena = 26, fora de 01-25
+
+            // Act
+            ValidationResult result = await _sut.ValidateAsync(model);
+
+            // Assert
+            result.IsValid.ShouldBeFalse();
+            result.Errors.ShouldContain(e => e.PropertyName == "Numbers");
+        }
     }
 }

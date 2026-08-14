@@ -98,6 +98,7 @@ namespace Lotofacil.Web.Features.Contests
 
             var contests = new List<ContestViewModel>();
             int savedContestsCount = 0;
+            var rowErrors = new List<string>();
 
             try
             {
@@ -118,7 +119,7 @@ namespace Lotofacil.Web.Features.Contests
                         // Tentar converter o texto para DateTime
                         if (!DateTime.TryParse(dateCell, out date))
                         {
-                            TempData["error"] = $"Erro ao processar a data no concurso {row.Cell(1).GetValue<string>()}. Valor inválido: {dateCell}.";
+                            rowErrors.Add($"Erro ao processar a data no concurso {row.Cell(1).GetValue<string>()}. Valor inválido: {dateCell}.");
                             continue; // Pula esta linha
                         }
 
@@ -136,7 +137,7 @@ namespace Lotofacil.Web.Features.Contests
 
                         if (!result.IsValid)
                         {
-                            TempData["error"] = $"Erro na validação do concurso {contestVM.Name}.";
+                            rowErrors.Add($"Erro na validação do concurso {contestVM.Name}.");
                             continue; // Pula este concurso
                         }
 
@@ -144,7 +145,7 @@ namespace Lotofacil.Web.Features.Contests
                     }
                     catch (Exception ex)
                     {
-                        TempData["error"] = $"Erro ao processar uma linha: {ex.Message}";
+                        rowErrors.Add($"Erro ao processar uma linha: {ex.Message}");
                         continue;
                     }
                 }
@@ -157,6 +158,10 @@ namespace Lotofacil.Web.Features.Contests
                 _cache.Remove(CacheContestKey);
 
                 TempData["notice"] = "Importação concluída com sucesso!";
+                if (rowErrors.Any())
+                {
+                    TempData["error"] = $"{rowErrors.Count} linha(s) com problema, ignoradas: {string.Join(" | ", rowErrors)}";
+                }
             }
             catch (Exception ex)
             {
@@ -172,7 +177,7 @@ namespace Lotofacil.Web.Features.Contests
         [Route("/List/AnalisarConcursos")]
         public async Task<IActionResult> AnalisarConcursos([FromBody] ContestModalRequestDTO request)
         {
-            if (request == null)
+            if (request == null || request.Contests is null || !request.Contests.Any())
                 return BadRequest(new { sucess = false, message = "É necessário selecionar pelo menos 1 concurso" });
 
             var response = await _contestService.AnalisarConcursos(request);

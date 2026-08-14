@@ -44,7 +44,8 @@ namespace Lotofacil.Application.Common
 
             RuleFor(x => x.Numbers)
                 .NotNull().WithMessage("Os números são obrigatórios.")
-                .Length(30).WithMessage("Os números devem ter exatamente 30 caracteres.");
+                .Length(30).WithMessage("Os números devem ter exatamente 30 caracteres.")
+                .Must(HaveUniqueDezenasWithinRange).WithMessage("As dezenas devem ser 15 valores únicos, cada um entre 01 e 25.");
 
             RuleFor(x => x.Data)
                 .NotNull().WithMessage("A data é obrigatória.")
@@ -57,6 +58,31 @@ namespace Lotofacil.Application.Common
             //     .Must(pass =>
             //     Regex.IsMatch(pass, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$"))
             //     .WithMessage("A senha não corresponde a um padrão seguro.");
+        }
+
+        /// <summary>
+        /// Verifica se a string de 30 caracteres representa 15 dezenas únicas, cada uma entre 01 e 25.
+        /// </summary>
+        /// <param name="numbers">String de números no formato de 15 pares de 2 dígitos, sem separador.</param>
+        /// <returns><c>true</c> se todas as dezenas forem válidas e únicas; caso contrário, <c>false</c>.</returns>
+        private static bool HaveUniqueDezenasWithinRange(string numbers)
+        {
+            if (string.IsNullOrEmpty(numbers) || numbers.Length != 30)
+            {
+                return true; // Deixa as regras de NotNull/Length reportarem o erro correspondente.
+            }
+
+            var dezenas = new List<int>();
+            for (int i = 0; i < numbers.Length; i += 2)
+            {
+                if (!int.TryParse(numbers.Substring(i, 2), out var dezena) || dezena < 1 || dezena > 25)
+                {
+                    return false;
+                }
+                dezenas.Add(dezena);
+            }
+
+            return dezenas.Distinct().Count() == 15;
         }
     }
 }
